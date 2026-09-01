@@ -1,9 +1,8 @@
-import User from "..model/User.js";
-import bcrypt from "bcryptjs";
-import { resolveSoa } from "dns";
-import jwt from "jsonwebtoken"
+const User = require("../models/User.js")
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
 
-export const register = async (req, res, next) => {
+const register = async (req, res, next) => {
     const { name, email, password } = req.body;
 
     let existingUser;
@@ -33,7 +32,7 @@ export const register = async (req, res, next) => {
     return res.status(201).json({ user });
 }
 
-export const login = async(req, res, next)=>{
+const login = async(req, res, next)=>{
     const {email,password} = req.body
     let existingUser
     try{
@@ -57,4 +56,9 @@ export const login = async(req, res, next)=>{
     return res
     .status(200)
     .json({ message: "Login Successfull", user: existingUser })
+}
+
+module.exports = {
+    login,
+    register
 }
