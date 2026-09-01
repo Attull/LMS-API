@@ -3,13 +3,13 @@ const { createCourse, getCourses, getCourseById, updateCourse, deleteCourse } = 
 
 const courseRoutes = express.Router()
 
-courseRoutes("/api/courses")
+courseRoutes.route("/api/courses")
 .post(createCourse)
 .get(getCourses)
 
-courseRoutes("/api/courses/:id")
+courseRoutes.route("/api/courses/:id")
 .get(getCourseById)
 .put(updateCourse)
 .delete(deleteCourse)
 
-// module.exports = courseRoutes
+module.exports = courseRoutes
