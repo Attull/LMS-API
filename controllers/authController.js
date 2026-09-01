@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
 const register = async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     let existingUser;
     try {
@@ -21,7 +21,8 @@ const register = async (req, res, next) => {
     const user = new User({
         name,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        role : role || 'student'
     })
 
     try {
@@ -32,30 +33,35 @@ const register = async (req, res, next) => {
     return res.status(201).json({ user });
 }
 
-const login = async(req, res, next)=>{
-    const {email,password} = req.body
+const login = async (req, res, next) => {
+    const { email, password } = req.body
     let existingUser
-    try{
-        existingUser = await User.findOne({email})
-    }catch(err){
+
+    try {
+        existingUser = await User.findOne({ email })
+    } catch (err) {
         return console.log(err)
     }
-    if(!existingUser){
-        return res
-        .status(404)
-        .json({message:"email not found"})
-    }
-    const token =jwt.sign(existingUser.email, process.env.SECRET_KEY)
 
-    const matchPassword = bcrypt.compareSync(password,existingUser.password)
-    if (!matchPassword){
+    if (!existingUser) {
         return res
-        .status(400)
-        .json({message:"incorrect Password"})
+            .status(404)
+            .json({ message: "email not found" })
     }
+
+    const matchPassword = bcrypt.compareSync(password, existingUser.password)
+
+    if (!matchPassword) {
+        return res
+            .status(400)
+            .json({ message: "incorrect Password" })
+    }
+
+    const token = jwt.sign(existingUser.email, process.env.SECRET_KEY)
+
     return res
-    .status(200)
-    .json({ message: "Login Successfull", user: existingUser })
+        .status(200)
+        .json({ message: "Login Successfull", user: existingUser })
 }
 
 module.exports = {
