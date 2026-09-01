@@ -5,23 +5,36 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     name: {
         type: String,
-        required: [true,"name is required"]
+        required: [true, 'Please provide a user name'],
     },
-        email: {
+    email: {
         type: String,
-        required: [true,"email is required"]
+        required: [true, 'Please provide an email address'],
+        unique: true,
+        lowercase: true,
+        trim: true
     },
-        password: {
+    password: {
         type: String,
-        required: [true, "password is required"]
+        required: [true, 'Please provide a password'],
+        minlength: [6, 'Password must be at least 6 characters long'],
     },
-        role: {
+    role: {
         type: String,
-        required: [true,"role is required"]
+        enum: {
+            values: ['student', 'instructor', 'admin'],
+            message: 'Role must be either student, instructor, or admin'
+        },
+        default: 'student'
     },
-        createat: {
+    createAt: {
         type: Date,
         default: Date.now
-    },
-})
-export default mongoose.model("User",userSchema)
+    }
+},
+    {
+        timestamps: true
+    })
+
+    
+export default mongoose.model("User", userSchema)
