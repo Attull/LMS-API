@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken');
-const asyncHandler = require('express-async-handler');
-const ErrorResponse = require('../utils/errorResponse');
 const User = require('../models/User');
 
 const protect = async (req, res, next) => {
@@ -24,13 +22,11 @@ const protect = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
 
         if (!req.user) {
-            return next(new ErrorResponse('No user found with this id', 401));
+            const error = new Error("No user found with this id")
+            error.statusCode = 401
+
+            return next(error);
         }
-
-        const error = new Error("Not authorized to access this route");
-        error.statusCode = 401;
-
-        next(error);
     
     } catch (err) {
         const error = new Error("Not authorized to access this route");
