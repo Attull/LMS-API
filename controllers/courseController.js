@@ -2,9 +2,9 @@ const Course = require("../models/Course")
 
 const createCourse =  async (req,res) => {
     try {
-        const {title , description, instructor, category, level, price, duration} = req.body
+        const {title, description, category, level, price, duration} = req.body
 
-        if(!title, !description, !instructor, !category, !level, !price, !duration){
+        if (!title || !description || !category || !level || price === undefined || !duration) {
             return res.status(400).send({
                 message : "Bad Request"
             })            
@@ -18,10 +18,10 @@ const createCourse =  async (req,res) => {
             })
         }
 
-        const course = await Course({
+        const course = new Course({
             title : title,
             description : description,
-            instructor : instructor,
+            instructor : req.user._id,
             category : category,
             level : level,
             price : price,
@@ -36,7 +36,9 @@ const createCourse =  async (req,res) => {
 
 
     }catch(error){
-        next()
+        return res.status(500).send({
+            message: "Unable to create course"
+        })
     }
 }
 
@@ -79,20 +81,44 @@ const updateCourse = async (req,res) => {
     try{
         const{id} = req.params
 
-        const course = await Course.findByIdAndUpdate(id, req.body)
+        const course = await Course.findById(id)
 
         if(!course){
-            return res.status(400).send({
-                message : "Bad Request: Course not found"
+            return res.status(404).send({
+                message : "Course not found"
             })
         }
+
+        if (!course.instructor || !course.instructor.equals(req.user._id)) {
+            return res.status(403).send({
+                message: "You can only update courses you created"
+            })
+        }
+
+        const editableFields = [
+            "title",
+            "description",
+            "category",
+            "level",
+            "price",
+            "duration"
+        ]
+
+        editableFields.forEach((field) => {
+            if (req.body[field] !== undefined) {
+                course[field] = req.body[field]
+            }
+        })
+        await course.save()
 
         return res.status(200).send({
             message : "Course Updated"
         })
 
     }catch(error){
-        next()
+        return res.status(500).send({
+            message: "Unable to update course"
+        })
     }
 } 
 
@@ -101,13 +127,21 @@ const deleteCourse = async (req,res) =>{
     try{
         const {id} = req.params
 
-        const course = await Course.findByIdAndDelete(id)
+        const course = await Course.findById(id)
 
         if(!course){
             return res.status(404).send({
                 message : "Course not found"
             })
         }
+
+        if (!course.instructor || !course.instructor.equals(req.user._id)) {
+            return res.status(403).send({
+                message: "You can only delete courses you created"
+            })
+        }
+
+        await course.deleteOne()
 
         return res.status(200).send({
             message : "Course deleted"

@@ -9,10 +9,9 @@ const protect = async (req, res, next) => {
     }
 
     if (!token) {
-        const error = new Error("Not authorized to access this route");
-        error.statusCode = 401;
-
-        return next(error);
+        return res.status(401).json({
+            message: "Not authorized to access this route"
+        });
     }
 
     try {
@@ -21,16 +20,16 @@ const protect = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
 
         if (!req.user) {
-            const error = new Error("No user found with this id")
-            error.statusCode = 401
+            return res.status(401).json({
+                message: "No user found with this id"
+            });
         }
 
         return next();
     } catch (err) {
-        const error = new Error("Not authorized to access this route");
-        error.statusCode = 401;
-
-        next(error);
+        return res.status(401).json({
+            message: "Not authorized to access this route"
+        });
     }
 };
 
