@@ -101,20 +101,22 @@ const deleteCourse = async (req,res) =>{
     try{
         const {id} = req.params
 
-        const course = Course.findByIdAndDelete(id)
+        const course = await Course.findByIdAndDelete(id)
 
         if(!course){
-            return res.status(400).send({
-                message : "Bad Request: Course not found"
+            return res.status(404).send({
+                message : "Course not found"
             })
         }
 
         return res.status(200).send({
-            messgae : "course deleted"
+            message : "Course deleted"
         })
 
     }catch(error){
-        next()
+        return res.status(500).send({
+            message: "Unable to delete course"
+        })
     }
 }
 
