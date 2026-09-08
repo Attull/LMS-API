@@ -61,7 +61,7 @@ const login = async (req, res, next) => {
 
     return res
         .status(200)
-        .json({ message: "Login Successfull", user: existingUser })
+        .json({ message: "Login Successfull", user: existingUser, token:token })
 }
 
 module.exports = {
