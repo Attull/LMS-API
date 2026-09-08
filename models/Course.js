@@ -11,7 +11,7 @@ const courseSchema = new mongoose.Schema({
         required: [true, 'Please provide a course description'],
         trim: true
     },
-    instructer: {
+    instructor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
