@@ -57,7 +57,10 @@ const login = async (req, res, next) => {
             .json({ message: "incorrect Password" })
     }
 
-    const token = jwt.sign(existingUser.email, process.env.SECRET_KEY)
+    const token = jwt.sign(
+        { id: existingUser._id },
+        process.env.SECRET_KEY
+    )
 
     return res
         .status(200)

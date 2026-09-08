@@ -16,18 +16,16 @@ const protect = async (req, res, next) => {
     }
 
     try {
-        // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
         req.user = await User.findById(decoded.id);
 
         if (!req.user) {
             const error = new Error("No user found with this id")
             error.statusCode = 401
-
-            return next(error);
         }
-    
+
+        return next();
     } catch (err) {
         const error = new Error("Not authorized to access this route");
         error.statusCode = 401;
