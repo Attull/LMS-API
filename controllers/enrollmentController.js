@@ -45,6 +45,28 @@ const enrollInCourse = async (req, res) => {
     }
 }
 
+const getMyCourses = async (req, res) => {
+    try {
+        const enrollments = await Enrollment.find({
+            student: req.user._id,
+            status: "active"
+        })
+            .sort({ enrolledAt: -1 })
+            .populate("course")
+
+        const courses = enrollments
+            .map((enrollment) => enrollment.course)
+            .filter(Boolean)
+
+        return res.status(200).json({ courses })
+    } catch (error) {
+        return res.status(500).json({
+            message: "Unable to fetch enrolled courses"
+        })
+    }
+}
+
 module.exports = {
-    enrollInCourse
+    enrollInCourse,
+    getMyCourses
 }

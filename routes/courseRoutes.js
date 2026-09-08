@@ -1,6 +1,6 @@
 const express = require("express")
 const { createCourse, getCourses, getCourseById, updateCourse, deleteCourse } = require("../controllers/courseController")
-const { enrollInCourse } = require("../controllers/enrollmentController")
+const { enrollInCourse, getMyCourses } = require("../controllers/enrollmentController")
 const { protect } = require("../middleware/authMiddleware")
 
 const courseRoutes = express.Router()
@@ -15,5 +15,6 @@ courseRoutes.route("/api/courses/:id")
 .delete(protect, deleteCourse)
 
 courseRoutes.post("/api/courses/:id/enroll", protect, enrollInCourse)
+courseRoutes.get("/api/my-courses", protect, getMyCourses)
 
 module.exports = courseRoutes
