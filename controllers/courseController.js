@@ -1,119 +1,121 @@
 const Course = require("../models/Course")
 
-const createCourse =  async (req,res) => {
+const createCourse = async (req, res) => {
     try {
-        const {title , description, instructor, category, level, price, duration} = req.body
+        const { title, description, category, level, price, duration } = req.body
 
-        if(!title, !description, !instructor, !category, !level, !price, !duration){
+        if (!title, !description, !category, !level, !price, !duration) {
             return res.status(400).send({
-                message : "Bad Request"
-            })            
+                message: "Bad Request"
+            })
         }
 
-        const existingCourse = await Course.findOne({title : title})
-        
-        if(existingCourse){
+        const existingCourse = await Course.findOne({ title: title })
+
+        if (existingCourse) {
             return res.status(400).send({
-                message : "Bad Request, Course already Exists"
+                message: "Bad Request, Course already Exists"
             })
         }
 
         const course = await Course({
-            title : title,
-            description : description,
-            instructor : instructor,
-            category : category,
-            level : level,
-            price : price,
-            duration : duration
+            title: title,
+            description: description,
+            instructor: req.user._id,
+            category: category,
+            level: level,
+            price: price,
+            duration: duration
         })
 
         await course.save()
 
         return res.status(200).send({
-            message : "New course created"
+            message: "New course created"
         })
 
 
-    }catch(error){
-        next()
+    } catch (error) {
+        return res.status(500).send({
+            message: "Unable to create course"
+        })
     }
 }
 
 
-const getCourses = async (req,res) => {
+const getCourses = async (req, res) => {
     try {
-        const {id} = req.params
+        const { id } = req.params
 
         const courses = await Course.find()
 
         return res.status(200).send(courses)
 
-    }catch(error){
+    } catch (error) {
         next()
     }
-} 
+}
 
 
-const getCourseById = async (req,res) => {
+const getCourseById = async (req, res) => {
     try {
-        const {id} = req.params
+        const { id } = req.params
 
         const course = await Course.findById(id)
 
-        if(!course){
+        if (!course) {
             return res.status(400).send({
-                message : "Bad Request: Course not found"
+                message: "Bad Request: Course not found"
             })
         }
 
         return res.status(200).send(course)
 
-    }catch(error){
+    } catch (error) {
         next()
     }
-} 
+}
 
 
-const updateCourse = async (req,res) => {
-    try{
-        const{id} = req.params
+const updateCourse = async (req, res) => {
+    try {
+        const { id } = req.params
 
         const course = await Course.findByIdAndUpdate(id, req.body)
 
-        if(!course){
+        if (!course) {
             return res.status(400).send({
-                message : "Bad Request: Course not found"
+                message: "Bad Request: Course not found"
             })
         }
 
         return res.status(200).send({
-            message : "Course Updated"
+            message: "Course Updated"
         })
 
-    }catch(error){
+    } catch (error) {
         next()
     }
-} 
+}
 
 
-const deleteCourse = async (req,res) =>{
-    try{
-        const {id} = req.params
+const deleteCourse = async (req, res) => {
+    try {
+        const { id } = req.params
 
-        const course = Course.findByIdAndDelete(id)
+        const course = await Course.findByIdAndDelete(id)
 
-        if(!course){
+        if (!course) {
             return res.status(400).send({
-                message : "Bad Request: Course not found"
+                message: "Bad Request: Course not found"
             })
         }
 
         return res.status(200).send({
-            messgae : "course deleted"
+            messgae: "course deleted"
         })
 
-    }catch(error){
+    } catch (error) {
         next()
     }
 }

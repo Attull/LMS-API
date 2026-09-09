@@ -1,15 +1,16 @@
 const express = require("express")
 const { createCourse, getCourses, getCourseById, updateCourse, deleteCourse } = require("../controllers/courseController")
+const { protect } = require("../middleware/authMiddleware")
 
 const courseRoutes = express.Router()
 
 courseRoutes.route("/api/courses")
-.post(createCourse)
+.post(protect, createCourse)
 .get(getCourses)
 
 courseRoutes.route("/api/courses/:id")
 .get(getCourseById)
-.put(updateCourse)
-.delete(deleteCourse)
+.put(protect, updateCourse)
+.delete(protect, deleteCourse)
 
 module.exports = courseRoutes
