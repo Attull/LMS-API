@@ -10,7 +10,7 @@ require('dotenv').config();
 
 app.use(express.json());
 
-app.use(courseRoutes)
+app.use("/api/courses",courseRoutes)
 
 dns.setServers(["1.1.1.1","8.8.8.8"])
 

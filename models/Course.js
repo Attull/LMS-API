@@ -12,9 +12,9 @@ const courseSchema = new mongoose.Schema({
         trim: true
     },
     instructer: {
-        type: String,
-        require: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: [true, 'A course must have an instructor']
     },
     category: {
         type: String,
